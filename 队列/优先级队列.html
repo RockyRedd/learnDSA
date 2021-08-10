@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ch">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      class PriorityQueue {
+        // 内部类  构建优先级队列内的元素
+        static Element = class {
+          constructor(el, priority) {
+            this.el = el
+            this.priority = priority
+          }
+        }
+        constructor() {
+          this.items = []
+        }
+        enter(el, priority) {
+          const element = new PriorityQueue.Element(el, priority)
+          if (this.isEmpty()) {
+            this.items.push(element)
+          } else {
+            let inserted = false
+            for (let i = 0; i < this.length(); i++) {
+              if (element.priority < this.items[i].priority) {
+                this.items.splice(i, 0, element)
+                inserted = true
+                break
+              }
+            }
+            if (!inserted) this.items.push(element)
+            inserted = false
+          }
+        }
+        out() {
+          return this.items.shift()
+        }
+        front() {
+          return this.items[0]
+        }
+        isEmpty() {
+          return this.items.length === 0
+        }
+        length() {
+          return this.items.length
+        }
+        toString() {
+          let result = ``
+          for (let i = 0; i < this.length(); i++) {
+            result += `{${this.items[i].el},${this.items[i].priority}};`
+          }
+          return result
+        }
+      }
+      const pq = new PriorityQueue()
+      pq.enter('c', 3)
+      pq.enter('z', 999)
+      pq.enter('a', 1)
+      pq.enter('b', 2)
+      pq.enter('x', 777)
+      pq.enter('e', 5)
+      pq.enter('y', 998)
+      pq.enter('d', 4)
+      console.log(pq)
+      console.log(pq.toString())
+    </script>
+  </body>
+</html>

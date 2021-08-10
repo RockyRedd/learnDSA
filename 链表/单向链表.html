@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ch">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      class LinkedList {
+        // 内部类，创造链表内节点实例
+        static Node = class {
+          constructor(data) {
+            this.data = data
+            this.next = null
+          }
+        }
+        constructor() {
+          // 链表最重要的两个属性，head和length
+          this.head = null
+          this.length = 0
+        }
+        toString() {
+          let current = this.head
+          let string = ''
+          while (current) {
+            string += current.data + ' '
+            current = current.next
+          }
+          return string
+        }
+        inEmpty() {
+          return this.length === 0
+        }
+        size() {
+          return this.length
+        }
+        // append方法，在链表后面添加一个节点
+        append(data) {
+          const node = new LinkedList.Node(data)
+          if (this.length === 0) {
+            this.head = node
+          } else {
+            let current = this.head
+            while (current.next) {
+              current = current.next
+            }
+            current.next = node
+          }
+          this.length += 1
+          return this.length
+        }
+        // insert方法，在链表任意位置插入一个节点
+        insert(position, data) {
+          // 插入的位置不能是负数且不能比链表的长度大（链表的长度一定大于等于positon）
+          if (position < 0 || position > this.length)
+            throw new Error('输入的位置有误')
+          const node = new LinkedList.Node(data)
+          if (position == 0) {
+            /*
+            if (this.length === 0) { //链表内没有节点的情况
+              this.head = node
+            } else { //链表内有节点的情况
+              node.next = this.head
+              this.head = node
+            }
+            */
+            //  综上两种情况，其实可以用两行代码概括
+            node.next = this.head
+            this.head = node
+          } else {
+            //包含了插入中间和插入末尾的情况
+            let previous
+            let current = this.head
+            for (let i = 0; i < position; i++) {
+              previous = current
+              current = current.next
+            }
+            node.next = current
+            previous.next = node
+          }
+          this.length += 1
+          return this.length
+        }
+        // 根据索引查看一个节点
+        get(position) {
+          if (position < 0 || position >= this.length)
+            throw new Error('输入位置有误')
+          let current = this.head
+          for (let i = 0; i < position; i++) {
+            current = current.next
+          }
+          return current.data
+        }
+        // 根据给定内容返回链表中该节点的索引，若没有找到则返回-1
+        indexOf(data) {
+          let current = this.head
+          for (let i = 0; i < this.length; i++) {
+            if (current.data === data) return i
+            current = current.next
+          }
+          return -1
+        }
+        // 更新给定索引节点的值
+        update(position, newValue) {
+          if (position < 0 || position >= this.length)
+            throw new Error('输入位置有误')
+          let current = this.head
+          for (let i = 0; i < position; i++) {
+            current = current.next
+          }
+          const oldValue = current.data
+          current.data = newValue
+          return ll.toString()
+        }
+        // 移除给定索引的节点，并将其返回
+        removeAt(position) {
+          if (position < 0 || position >= this.length)
+            throw new Error('输入位置有误')
+          let current = this.head
+          if (position == 0) {
+            this.head = this.head.next
+          } else {
+            let previous
+            for (let i = 0; i < position; i++) {
+              previous = current
+              current = current.next
+            }
+            previous.next = current.next
+          }
+          return current
+        }
+        // 根据给定的内容移除匹配的节点
+        remove(data) {
+          return this.removeAt(this.indexOf(data))
+        }
+      }
+      const ll = new LinkedList()
+      ll.append('d')
+      ll.append('e')
+      ll.append('f')
+      console.log(ll.toString())
+      ll.insert(0, 'a')
+      console.log(ll.toString())
+      ll.insert(1, 'b')
+      console.log(ll.toString())
+      ll.insert(2, 'c')
+      console.log(ll.toString())
+      ll.insert(6, 'g')
+      console.log(ll.toString())
+      console.log(ll.get(5))
+      console.log(ll.indexOf('d'))
+      console.log(ll.update(6, 'x'))
+      console.log(ll.removeAt(6))
+      console.log(ll.remove('f'))
+    </script>
+  </body>
+</html>

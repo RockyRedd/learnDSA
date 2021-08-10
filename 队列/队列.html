@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ch">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      class Queue {
+        constructor() {
+          this.items = []
+        }
+        enter(el) {
+          return this.items.push(el)
+        }
+        out() {
+          return this.items.shift()
+        }
+        front() {
+          return this.items[0]
+        }
+        isEmpty() {
+          return this.items.length === 0
+        }
+        length() {
+          return this.items.length
+        }
+        toString() {
+          return this.items.join()
+        }
+      }
+      // const q = new Queue()
+      // q.enter('a')
+      // q.enter('b')
+      // q.enter('c')
+      // q.enter('d')
+      // q.enter('e')
+      // console.log(q)
+      // console.log(q.out())
+      // console.log(q.out())
+      // console.log(q.out())
+      // console.log(q.front())
+      // console.log(q.isEmpty())
+      // console.log(q.length())
+      // console.log(q.toString())
+
+      /* 
+        击鼓传花游戏：
+          几个人参加游戏，开场规定一个数字，依次开始报数，
+          数到规定数字的人淘汰，下个人从1重新开始，
+          直到剩下最后一个人，返回这个人的姓名和编号
+      */
+      function passGame(nameList, num) {
+        const queue = new Queue()
+        for (let item of nameList) {
+          queue.enter(item)
+        }
+        while (queue.length() > 1) {
+          for (let i = 0; i < num - 1; i++) {
+            queue.enter(queue.out())
+          }
+          queue.out()
+        }
+        const winner = queue.front()
+        const index = nameList.indexOf(winner)
+        return `winner is ${winner},his index is ${index}`
+      }
+      const result = passGame(['TOM', 'Nancy', 'Jack', 'Peter', 'Bob'], 3)
+      console.log(result)
+    </script>
+  </body>
+  
+</html>

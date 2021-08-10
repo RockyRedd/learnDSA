@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+
+  <body>
+    <script>
+      // 封装栈类
+      class Stack {
+        constructor() {
+          // 基于数组实现栈结构
+          this.items = []
+        }
+        // 1.push方法，将元素压入栈
+        push(element) {
+          this.items.push(element)
+        }
+        // 2.pop方法，将元素弹出栈
+        pop() {
+          return this.items.pop()
+        }
+        // 3.peek方法，查看当前栈顶元素
+        peek() {
+          return this.items[this.items.length - 1]
+        }
+        // 4.isEmpty方法，判断当前栈是否为空
+        isEmpty() {
+          return this.items.length === 0
+        }
+        // 5.length方法，查看当前栈的长度
+        length() {
+          return this.items.length
+        }
+        // 6.toString方法，将当前栈结构以字符串的形式返回
+        toString() {
+          return this.items.join()
+        }
+      }
+      // const s = new Stack()
+      // s.push(5)
+      // s.push(4)
+      // s.push(3)
+      // s.push(2)
+      // s.push(1)
+      // console.log(s)
+      // console.log(s.pop())
+      // console.log(s.pop())
+      // console.log(s.pop())
+      // console.log(s)
+      // console.log(s.peek())
+      // console.log(s.length())
+      // console.log(s.isEmpty())
+      // console.log(s.toString())
+
+      /*
+      十进制转二进制算法
+      例：100
+        100/2=50 余0
+        50/2=25  余0
+        25/2=12  余1
+        12/2=6  余0
+        6/2=3   余0
+        3/2=1   余1
+        1/2=0   余1
+      结果为 1100100
+    */
+      function dec2bin(dec) {
+        const stack = new Stack()
+        while (dec > 0) {
+          stack.push(dec % 2)
+          dec = Math.floor(dec / 2)
+        }
+        let result = ''
+        while (!stack.isEmpty()) {
+          result += stack.pop()
+        }
+        console.log(result)
+      }
+      dec2bin(10)
+      dec2bin(100)
+      dec2bin(1000)
+    </script>
+  </body>
+</html>
