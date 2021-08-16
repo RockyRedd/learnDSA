@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ch">
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -18,6 +18,7 @@
         // 1.push方法，将元素压入栈
         push(element) {
           this.items.push(element)
+          return this.length()
         }
         // 2.pop方法，将元素弹出栈
         pop() {
@@ -57,17 +58,17 @@
       // console.log(s.toString())
 
       /*
-      十进制转二进制算法
-      例：100
-        100/2=50 余0
-        50/2=25  余0
-        25/2=12  余1
-        12/2=6  余0
-        6/2=3   余0
-        3/2=1   余1
-        1/2=0   余1
-      结果为 1100100
-    */
+        十进制转二进制算法
+        例：100
+          100/2=50 余0
+          50/2=25  余0
+          25/2=12  余1
+          12/2=6  余0
+          6/2=3   余0
+          3/2=1   余1
+          1/2=0   余1
+        结果为 1100100
+      */
       function dec2bin(dec) {
         const stack = new Stack()
         while (dec > 0) {

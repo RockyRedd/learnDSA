@@ -51,34 +51,25 @@
           this.length += 1
           return this.length
         }
-        // insert方法，在链表任意位置插入一个节点
+        // insert方法，在链表任意位置插入一个节点(考虑不同数组长度下的不同插入位置的各种情况)
         insert(position, data) {
-          // 插入的位置不能是负数且不能比链表的长度大（链表的长度一定大于等于positon）
-          if (position < 0 || position > this.length)
-            throw new Error('输入的位置有误')
           const node = new LinkedList.Node(data)
-          if (position == 0) {
-            /*
-            if (this.length === 0) { //链表内没有节点的情况
-              this.head = node
-            } else { //链表内有节点的情况
-              node.next = this.head
-              this.head = node
-            }
-            */
-            //  综上两种情况，其实可以用两行代码概括
-            node.next = this.head
+          if (this.length === 0) {
             this.head = node
           } else {
-            //包含了插入中间和插入末尾的情况
-            let previous
-            let current = this.head
-            for (let i = 0; i < position; i++) {
-              previous = current
-              current = current.next
+            if (position == 0) {
+              node.next = this.head
+              this.head = node
+            } else {
+              let previous
+              let current = this.head
+              for (let i = 0; i < position; i++) {
+                previous = current
+                current = current.next
+              }
+              previous.next = node
+              node.next = current
             }
-            node.next = current
-            previous.next = node
           }
           this.length += 1
           return this.length
@@ -112,24 +103,30 @@
           }
           const oldValue = current.data
           current.data = newValue
-          return ll.toString()
+          return oldValue
         }
         // 移除给定索引的节点，并将其返回
         removeAt(position) {
           if (position < 0 || position >= this.length)
             throw new Error('输入位置有误')
           let current = this.head
-          if (position == 0) {
-            this.head = this.head.next
+          if (this.length === 1) {
+            current = this.head
+            this.head = null
           } else {
-            let previous
-            for (let i = 0; i < position; i++) {
-              previous = current
-              current = current.next
+            if (position == 0) {
+              this.head = this.head.next
+            } else {
+              let previous
+              for (let i = 0; i < position; i++) {
+                previous = current
+                current = current.next
+              }
+              previous.next = current.next
             }
-            previous.next = current.next
+            this.length -= 1
+            return current
           }
-          return current
         }
         // 根据给定的内容移除匹配的节点
         remove(data) {
@@ -154,6 +151,7 @@
       console.log(ll.update(6, 'x'))
       console.log(ll.removeAt(6))
       console.log(ll.remove('f'))
+      console.log(ll.size())
     </script>
   </body>
 </html>

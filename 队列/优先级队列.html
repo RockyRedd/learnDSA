@@ -20,6 +20,12 @@
           this.items = []
         }
         enter(el, priority) {
+          /*
+            进入优先级队列有三种情况:(先考虑队列的长度，在考虑不同长度下插入的位置)
+              (1)队列没有元素时直接加入队列
+              (2)队列有元素，且优先级在中间，插入中间
+              (3)队列有元素，且优先级最低，插入最后
+          */
           const element = new PriorityQueue.Element(el, priority)
           if (this.isEmpty()) {
             this.items.push(element)

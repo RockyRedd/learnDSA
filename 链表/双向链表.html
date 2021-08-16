@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ch">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      class BiLinkedList {
+        static Node = class {
+          constructor(data) {
+            this.data = data
+            this.prev = null
+            this.next = null
+          }
+        }
+        constructor() {
+          this.head = null
+          this.tail = null
+          this.length = 0
+        }
+        size() {
+          return this.length
+        }
+        isEmpty() {
+          return this.length === 0
+        }
+        // pushString方法，向前遍历双向链表
+        pushString() {
+          let current = this.head
+          let result = ``
+          while (current) {
+            result += current.data + ' '
+            current = current.next
+          }
+          return result
+        }
+        // pullString方法，向后遍历双向链表
+        pullString() {
+          let current = this.tail
+          let result = ``
+          while (current) {
+            result += current.data + ' '
+            current = current.prev
+          }
+          return result
+        }
+        // append方法，向双向链表尾部添加一个节点
+        append(data) {
+          const node = new BiLinkedList.Node(data)
+          if (this.length === 0) {
+            this.head = node
+            this.tail = node
+          } else {
+            this.tail.next = node
+            node.prev = this.tail
+            this.tail = node
+          }
+          this.length += 1
+          return this.length
+        }
+        // insert方法，在置顶位置插入一个节点（先考虑链表的长度，在考虑不同长度下的不同插入情况）
+        insert(position, data) {
+          if (position < 0 || position > this.length)
+            throw new Error('输入的position有误')
+          const node = new BiLinkedList.Node(data)
+          if (this.length === 0) {
+            // 链表内没有节点
+            this.head = node
+            this.tail = node
+          } else {
+            // 链表内有节点
+            if (position == 0) {
+              // 插入的位置为0
+              this.head.prev = node
+              node.next = this.head
+              this.head = node
+            } else if (position === this.length) {
+              // 插入的位置为链表尾部
+              this.tail.next = node
+              node.prev = this.tail
+              this.tail = node
+            } else {
+              // 插入的位置为链表中间
+              // 判断插入位置是在前半部分还是后半部分
+              if (this.length / 2 > position) {
+                // 前半部分，从前往后遍历
+                let current = this.head
+                for (let i = 0; i < position; i++) {
+                  current = current.next
+                }
+                node.next = current
+                node.prev = current.prev
+                current.prev.next = node
+                current.prev = node
+              } else {
+                // 后半部分，从后向前遍历
+                let current = this.tail
+                for (let i = this.length - 1; i > position; i--) {
+                  current = current.prev
+                }
+                node.next = current
+                node.prev = current.prev
+                current.prev.next = node
+                current.prev = node
+              }
+            }
+          }
+          this.length += 1
+          return this.length
+        }
+        // get方法，获取给定位置的节点值
+        get(position) {
+          if (position < 0 || position >= this.length)
+            throw new Error('输入的position有误')
+          // 判断位置是在前半部分还是后半部分
+          if (this.length / 2 > position) {
+            // 前半部分，从前往后遍历
+            let current = this.head
+            for (let i = 0; i < position; i++) {
+              current = current.next
+            }
+            return current.data
+          } else {
+            // 后半部分，从后向前遍历
+            let current = this.tail
+            for (let i = this.length - 1; i > position; i--) {
+              current = current.prev
+            }
+            return current.data
+          }
+        }
+        // 返回给定值节点所在的索引
+        indexOf(data) {
+          let current = this.head
+          for (let i = 0; i < this.length; i++) {
+            if (current.data === data) return i
+            current = current.next
+          }
+          return -1
+        }
+        // update方法，更新给定位置的节点值
+        update(position, newValue) {
+          if (position < 0 || position >= this.length)
+            throw new Error('输入的位置有误')
+          let oldValue
+          // 判断给定的位置在前半部分还是后半部分
+          if (this.length / 2 > position) {
+            // 前半部分，从前向后遍历
+            let current = this.head
+            for (let i = 0; i < position; i++) {
+              current = current.next
+            }
+            oldValue = current.data
+            current.data = newValue
+          } else {
+            // 后半部分，从后向前遍历
+            let current = this.tail
+            for (let i = this.length - 1; i > position; i--) {
+              current = current.prev
+            }
+            oldValue = current.data
+            current.data = newValue
+          }
+          return oldValue
+        }
+        // removeAt方法，删除指定位置的节点
+        removeAt(position) {
+          if (position < 0 || position >= this.length)
+            throw new Error('输入的位置有误')
+          //先考虑链表的长度
+          let current
+          if (this.length === 1) {
+            // 若只有一个节点
+            current = this.head
+            this.head = null
+            this.tail = null
+          } else {
+            // 有多个节点
+            // 判断删除的位点
+            if (position == 0) {
+              // 删除第一个节点
+              current = this.head
+              this.head.next.prev = null
+              this.head = this.head.next
+            } else if (position === this.length - 1) {
+              // 删除最后一个节点
+              current = this.tail
+              this.tail.prev.next = null
+              this.tail = this.tail.prev
+            } else {
+              // 删除中间的节点
+              // 判断给定的位置在前半部分还是后半部分
+              if (this.length / 2 > position) {
+                // 前半部分，从前向后遍历
+                current = this.head
+                for (let i = 0; i < position; i++) {
+                  current = current.next
+                }
+                current.next.prev = current.prev
+                current.prev.next = current.next
+              } else {
+                // 后半部分，从后向前遍历
+                current = this.tail
+                for (let i = this.length - 1; i > position; i--) {
+                  current = current.prev
+                }
+                current.next.prev = current.prev
+                current.prev.next = current.next
+              }
+            }
+          }
+          this.length -= 1
+          return current
+        }
+        // remove方法，移除指定内容的节点
+        remove(data) {
+          return this.removeAt(this.indexOf(data))
+        }
+        // getHead方法，获取链表头
+        getHead() {
+          return this.head.data
+        }
+        // getTail方法，获取链表尾
+        getTail() {
+          return this.tail.data
+        }
+      }
+      const bill = new BiLinkedList()
+      bill.append('1')
+      bill.append('2')
+      bill.append('3')
+      console.log(bill.pushString())
+      console.log(bill.pullString())
+      bill.insert(0, 'a')
+      console.log(bill.pushString())
+      bill.insert(2, 'b')
+      console.log(bill.pushString())
+      bill.insert(4, 'c')
+      console.log(bill.pushString())
+      bill.insert(6, 'd')
+      console.log(bill.pushString())
+      console.log(bill.get(0))
+      console.log(bill.get(2))
+      console.log(bill.get(6))
+      console.log(bill.indexOf('1'))
+      console.log(bill.update(0, 'x'))
+      console.log(bill.pushString())
+      console.log(bill.update(6, 'z'))
+      console.log(bill.pushString())
+      console.log(bill.removeAt(2))
+      console.log(bill.pushString())
+      console.log(bill.removeAt(3))
+      console.log(bill.pushString())
+    </script>
+  </body>
+</html>
