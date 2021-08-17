@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ch">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      class MySet {
+        constructor() {
+          this.items = {}
+        }
+        has(value) {
+          return this.items.hasOwnProperty(value)
+        }
+        size() {
+          return Object.keys(this.items).length
+        }
+        add(value) {
+          if (this.has(value)) return new Error('集合中已存在该元素')
+          this.items[value] = value
+          return this.size()
+        }
+        remove(value) {
+          if (!this.has(value)) return
+          delete this.items[value]
+          return this.size()
+        }
+        clear() {
+          this.items = {}
+        }
+        values() {
+          return Object.keys(this.items)
+        }
+        union(otherSet) {
+          const unionSet = new MySet()
+          let values = this.values()
+          for (let i = 0; i < values.length; i++) {
+            unionSet.add(values[i])
+          }
+          values = otherSet.values()
+          for (let i = 0; i < values.length; i++) {
+            unionSet.add(values[i])
+          }
+          return unionSet
+        }
+        intersection(otherSet) {
+          const intersectionSet = new MySet()
+          const values = this.values()
+          for (let i = 0; i < values.length; i++) {
+            if (otherSet.has(values[i])) {
+              intersectionSet.add(values[i])
+            }
+          }
+          return intersectionSet
+        }
+        difference(otherSet) {
+          const differenceSet = new MySet()
+          const values = this.values()
+          for (let i = 0; i < values.length; i++) {
+            if (!otherSet.has(values[i])) {
+              differenceSet.add(values[i])
+            }
+          }
+          return differenceSet
+        }
+        isChild(otherSet) {
+          const values = this.values()
+          for (let i = 0; i < values.length; i++) {
+            if (!otherSet.has(values[i])) return false
+          }
+          return true
+        }
+      }
+      // const set = new MySet()
+      // set.add('a')
+      // set.add('a')
+      // set.add('b')
+      // set.add('c')
+      // set.add('d')
+      // console.log(set.values())
+      // set.remove('d')
+      // console.log(set.values())
+      // console.log(set.size())
+      // console.log(set.has('a'))
+      // set.clear()
+      // console.log(set.values())
+
+      const setA = new MySet()
+      const setB = new MySet()
+      const setC = new MySet()
+      setA.add('1')
+      setA.add('2')
+      setA.add('3')
+      setA.add('4')
+
+      setB.add('1')
+      setB.add('2')
+      setB.add('3')
+      setB.add('5')
+      setB.add('6')
+
+      setC.add('1')
+      setC.add('2')
+      setC.add('3')
+      setC.add('4')
+      setC.add('5')
+      setC.add('6')
+      setC.add('7')
+
+      console.log(setA.union(setB))
+      console.log(setA.intersection(setB))
+      console.log(setA.difference(setB))
+      console.log(setA.isChild(setC));
+    </script>
+  </body>
+</html>
