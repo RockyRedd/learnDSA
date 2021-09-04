@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ch">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      /*
+        哈希函数，作用有两个：
+          （1）将字符串str按幂连乘法（经霍纳算法优化，霍纳算法即从左到右两两提取最大公因数）转换为hashCode(质数选择37)
+          （2）将hashCode压缩到想要的数组范围num内
+       */
+      function hashFun(str, size) {
+        // 定义hashCode
+        let hashCode = 0
+        for (let i = 0; i < str.length; i++) {
+          // 霍纳算法 cats = 3 * 37^3 + 1 * 37^2 + 20 * 37 + 17
+          //              = ((3*37 + 1)*37 + 20)*37 + 17
+          //              = hashCode * 37 + str.charCodeAt(i)
+          hashCode = hashCode * 37 + str.charCodeAt(i)
+        }
+        // 将hashCode压缩到数组范围内
+        const index = hashCode % size
+        return index
+      }
+      console.log(hashFun('hei', 7))
+      console.log(hashFun('nihao', 7))
+      console.log(hashFun('hello', 7))
+      console.log(hashFun('hi', 7))
+      console.log(hashFun('haha', 7))
+    </script>
+  </body>
+</html>

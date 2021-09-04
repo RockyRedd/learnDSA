@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ch">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      // 采用链地址法来实现哈希表，链用数组来实现，每个链中装的是一个个键值对数组
+      class HashTable {
+        constructor() {
+          // 哈希表
+          this.storage = []
+          // 用来表示哈希表内已存储的数据数量
+          this.count = 0
+          // 哈希表最多可容纳链的数量
+          this.limit = 7
+        }
+        hashFun(str, limit) {
+          // 定义hashCode
+          let hashCode = 0
+          for (let i = 0; i < str.length; i++) {
+            // 霍纳算法 cats = 3 * 37^3 + 1 * 37^2 + 20 * 37 + 17
+            //              = ((3*37 + 1)*37 + 20)*37 + 17
+            //              = hashCode * 37 + str.charCodeAt(i)
+            hashCode = hashCode * 37 + str.charCodeAt(i)
+          }
+          // 将hashCode压缩到数组范围内
+          const index = hashCode % limit
+          return index
+        }
+        isEmpty() {
+          return this.count === 0
+        }
+        size() {
+          return this.count
+        }
+        // put方法，添加或者修改数据，数据为一个个数组，且存储键值对
+        put(key, value) {
+          // 通过hash函数基于key获得索引
+          const index = this.hashFun(key, this.limit)
+          // 获得哈希表中指定索引位置的链
+          let wrapper = this.storage[index]
+          // 该位置还没有链，创建一个新链（数组）
+          if (wrapper === undefined) {
+            wrapper = []
+            this.storage[index] = wrapper
+          }
+          // 遍历链内数据，若有相同key的数据，更新数据值
+          for (let i = 0; i < wrapper.length; i++) {
+            const item = wrapper[i]
+            if (item[0] === key) {
+              const oldValue = item[1]
+              item[1] = value
+              return oldValue
+            }
+          }
+          // 链中没有对应key值数据，新增该数据
+          wrapper.push([key, value])
+          //数据数加1
+          this.count++
+          // 判断当hash表内元素数量达到最大容量的75%时对hash表进行扩容
+          if (this.count > this.limit * 0.75) {
+            const newPrime = this.getPrime(this.limit * 2)
+            this.resize(newPrime)
+          }
+          return
+        }
+        // get方法，根据key获取对应的value
+        get(key) {
+          // 通过hash函数基于key获得索引
+          const index = this.hashFun(key, this.limit)
+          // 获得哈希表中指定索引位置的链
+          const wrapper = this.storage[index]
+          // 该位置还没有链，返回undefined
+          if (wrapper === undefined) return
+          // 遍历链内数据，若有相同key的数据，返回数据值
+          for (let i = 0; i < wrapper.length; i++) {
+            const item = wrapper[i]
+            if (item[0] === key) {
+              return item[1]
+            }
+          }
+          // 链中没有对应key值数据，返回undefined
+          return
+        }
+        // remove方法，根据key删除对应的数据
+        remove(key) {
+          // 通过hash函数基于key获得索引
+          const index = this.hashFun(key, this.limit)
+          // 获得哈希表中指定索引位置的链
+          const wrapper = this.storage[index]
+          // 该位置还没有链，返回undefined
+          if (wrapper === undefined) return
+          // 遍历链内数据，若有相同key的数据，删除数据并返回数据值
+          for (let i = 0; i < wrapper.length; i++) {
+            const item = wrapper[i]
+            if (item[0] === key) {
+              wrapper.splice(i, 1)
+              this.count--
+              // 判断当hash表内元素数量小于最大容量的25%且大于7时对hash表进行缩容
+              if (this.count > 7 && this.count < this.limit * 0.25) {
+                const newPrime = this.getPrime(Math.floor(this.limit / 2))
+                this.resize(newPrime)
+              }
+              return item[1]
+            }
+          }
+          // 链中没有对应key值数据，返回undefined
+          return
+        }
+        // resize方法，对hash表进行扩容或缩容处理
+        resize(newLimit) {
+          // lodStorage指向旧hash表
+          const oldStorage = this.storage
+          // 创建一个新的空hash表
+          this.storage = []
+          // 新hash表元素个数为0
+          this.count = 0
+          // 设置新hash表长度
+          this.limit = newLimit
+          // 遍历旧hash表，把每个wrapper中的元素重新放入新hash表中
+          for (let i = 0; i < oldStorage.length; i++) {
+            const wrapper = oldStorage[i]
+            if (wrapper === undefined || wrapper.length === 0) continue
+            for (let j = 0; j < wrapper.length; j++) {
+              const item = wrapper[j]
+              // 调用this.put方法即可
+              this.put(item[0], item[1])
+            }
+          }
+        }
+        // 判断一个数是否为质数
+        isPrime(num) {
+          const sqrt = parseInt(Math.sqrt(num))
+          for (let i = 2; i <= sqrt; i++) {
+            if (num % i === 0) return false
+          }
+          return true
+        }
+        // 根据一个数，获取比它大的最近的一个质数
+        getPrime(num) {
+          while (!this.isPrime(num)) {
+            num++
+          }
+          return num
+        }
+      }
+      const hashTable = new HashTable()
+      hashTable.put('nihao', 1)
+      hashTable.put('lalala', 2)
+      hashTable.put('hello', 3)
+      hashTable.put('xixixi', 4)
+      console.log(hashTable.get('nihao'))
+      console.log(hashTable.get('lalala'))
+      console.log(hashTable.get('hello'))
+      console.log(hashTable.get('xixixi'))
+      hashTable.put('nihao', 'nihao')
+      console.log(hashTable.get('nihao'))
+      hashTable.remove('lalala')
+      hashTable.remove('xixixi')
+      console.log(hashTable.get('lalala'))
+      console.log(hashTable.get('xixixi'))
+      console.log(hashTable.get('hello'))
+      hashTable.put('hello', 'hello')
+      console.log(hashTable.get('hello'))
+      console.log(hashTable.size())
+      console.log(hashTable.isEmpty())
+      console.log(hashTable);
+      hashTable.put('woaini', 'woaini')
+      hashTable.put('iloveyou', 'iloveyou')
+      hashTable.put('mememe', 'mememe')
+      hashTable.put('lalala', 'lalala')
+      hashTable.put('xixixi', 'xixixi')
+      hashTable.put('hahaha', 'hahaha')
+      hashTable.put('heihei', 'heihei')
+      console.log(hashTable);
+    </script>
+  </body>
+</html>
