@@ -197,7 +197,6 @@
             const successor = this.getSuccessor(node)
             if (node === this.root) {
               // 要删除的节点为根节点
-              successor.left = node.left
               this.root = successor
             } else {
               // 要删除的节点不是根节点
@@ -240,27 +239,27 @@
       // 代码测试
       const bst = new BST()
 
-      // bst.insert(11, 11)
-      // bst.insert(7, 7)
-      // bst.insert(15, 15)
-      // bst.insert(5, 5)
-      // bst.insert(3, 3)
-      // bst.insert(9, 9)
-      // bst.insert(8, 8)
-      // bst.insert(10, 10)
-      // bst.insert(13, 13)
-      // bst.insert(12, 12)
-      // bst.insert(14, 14)
-      // bst.insert(20, 20)
-      // bst.insert(18, 18)
-      // bst.insert(25, 25)
-      // bst.insert(6, 6)
-
-      bst.insert(7, 7)
-      bst.insert(3, 3)
-      bst.insert(1, 1)
       bst.insert(11, 11)
+      bst.insert(7, 7)
+      bst.insert(15, 15)
+      bst.insert(5, 5)
+      bst.insert(3, 3)
       bst.insert(9, 9)
+      bst.insert(8, 8)
+      bst.insert(10, 10)
+      bst.insert(13, 13)
+      bst.insert(12, 12)
+      bst.insert(14, 14)
+      bst.insert(20, 20)
+      bst.insert(18, 18)
+      bst.insert(25, 25)
+      bst.insert(6, 6)
+
+      // bst.insert(7, 7)
+      // bst.insert(3, 3)
+      // bst.insert(1, 1)
+      // bst.insert(11, 11)
+      // bst.insert(9, 9)
 
       let result = ''
       // bst.preOrder((node) => {
