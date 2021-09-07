@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ch">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      class BST {
+        constructor() {
+          this.root = null
+        }
+        static Node = class {
+          constructor(key, value) {
+            this.key = key
+            this.value = value
+            this.left = null
+            this.right = null
+          }
+        }
+        // 对外暴露的插入方法，插入指定键值的节点
+        insert(key, value) {
+          const node = new BST.Node(key, value)
+          if (this.root == null) {
+            this.root = node
+          } else {
+            this.insertNode(this.root, node)
+          }
+        }
+        // 插入节点的内部递归方法，比较两个节点，并决定插入的位置
+        insertNode(oldNode, newNode) {
+          if (newNode.key < oldNode.key) {
+            // 向左插入
+            if (oldNode.left == null) {
+              // 若左边子节点为空，直接赋值
+              oldNode.left = newNode
+            } else {
+              // 左边子节点不为空，递归调用insertNode
+              this.insertNode(oldNode.left, newNode)
+            }
+          } else if (newNode.key > oldNode.key) {
+            // 向右插入
+            if (oldNode.right == null) {
+              // 若右边子节点为空，直接赋值
+              oldNode.right = newNode
+            } else {
+              // 右边子节点不为空，递归调用insertNode
+              this.insertNode(oldNode.right, newNode)
+            }
+          } else {
+            // 两个节点相等，报错
+            throw new Error(
+              '树中已有该节点，若想修改该节点值，请调用update方法'
+            )
+          }
+        }
+        // 二叉树的先序遍历对外暴露的方法
+        preOrder(handler) {
+          this.preOrderNode(this.root, handler)
+        }
+        // 二叉树先序遍历内部递归方法
+        preOrderNode(node, handler) {
+          if (node != null) {
+            // 如果节点不为空，则先执行handler
+            handler(node)
+            // 再搜索左子节点
+            this.preOrderNode(node.left, handler)
+            /*
+              当所有左子节点都被搜索，最后一个左子节点为叶节点时，传入叶节点的右子节点，由于仍为空，函数执行完毕，调用栈弹出最后一个回调，
+              回到上一个父节点的函数，再搜索其右子节点
+            */
+            this.preOrderNode(node.right, handler)
+          }
+        }
+        // 二叉树的中序遍历对外暴露的方法
+        cenOrder(handler) {
+          this.cenOrderNode(this.root, handler)
+        }
+        // 二叉树中序遍历内部递归方法
+        cenOrderNode(node, handler) {
+          if (node != null) {
+            // 如果节点不为空，则先搜索其左子节点
+            this.cenOrderNode(node.left, handler)
+            // 当所有左子节点都被搜索，最后一个左子节点为叶节点时，执行handler
+            handler(node)
+            // 由于该叶节点没有右子节点，所以调用栈将其弹出，回到其父节点函数，执行其父节点hanler，并继续搜索其右子节点树
+            this.cenOrderNode(node.right, handler)
+          }
+        }
+        // 二叉树的后序遍历对外n暴露的方法
+        nextOrder(handler) {
+          this.nextOrderNode(this.root, handler)
+        }
+        // 二叉树的后序遍历的内部递归方法
+        nextOrderNode(node, handler) {
+          if (node != null) {
+            // 如果节点不为空，先搜索其左子节点
+            this.nextOrderNode(node.left, handler)
+            // 所有左子节点搜索完毕，最后一个左子节点为叶节点，执行其handler后，函数调用栈将其弹出，搜索该叶节点父节点的右子节点
+            this.nextOrderNode(node.right, handler)
+            // 右子节点也搜索完毕，并执行最后一个右子节点(叶节点)的handler后，最后执行父节点的handler
+            handler(node)
+          }
+        }
+        // max方法，返回树中最大key的节点value
+        max() {
+          let node = this.root
+          while (node?.right != null) {
+            node = node.right
+          }
+          return node?.value
+        }
+        // min方法，返回树种最小key的节点value
+        min() {
+          let node = this.root
+          while (node?.left != null) {
+            node = node.left
+          }
+          return node?.value
+        }
+        // get方法，根据key获取一个节点的值
+        get(key) {
+          let node = this.root
+          while (node != null) {
+            if (key < node.key) {
+              node = node.left
+            } else if (key > node.key) {
+              node = node.right
+            } else {
+              return node.value
+            }
+          }
+        }
+        // remove方法，根据key删除一个节点
+        remove(key) {
+          // 首先需要寻找到需要删除的节点
+          // node为要删除的节点
+          let node = this.root
+          // parent为要删除的节点的父节点
+          let parent = null
+          // leftOrRight显示要删除的节点是父节点的左子节点还是右子节点
+          let leftOrRight = ''
+          // 只要node.key不等于key，就一直向下寻找
+          while (node.key !== key) {
+            // 用parent保存父节点
+            parent = node
+            // 说明应向左寻找
+            if (key < node.key) {
+              node = node.left
+              leftOrRight = 'left'
+            } else {
+              // 说明应向右寻找
+              node = node.right
+              leftOrRight = 'right'
+            }
+            // 只要node为空，说明找到头也没有找到要删除的节点，直接返回
+            if (node == null) return
+          }
+          // 此时node为找到的需要删除的节点，parent为父节点，leftOrRight提示是父节点的左子节点还是右子节点
+          /*
+            此时，分为三种情况：
+              (1)要删除的节点为叶子节点
+              (2)要删除的节点只有一个子节点
+              (3)要删除的节点有两个子节点
+          */
+          // 要删除的节点为叶节点
+          if (node.left == null && node.right == null) {
+            // 如果该叶节点就是根节点，直接删除
+            if (node === this.root) {
+              this.root = null
+            } else {
+              // 否则就将父节点的左或右子节点删除
+              parent[leftOrRight] = null
+            }
+          } else if (node.right == null) {
+            // 要删除的节点只有一个左子节点
+            if (node === this.root) {
+              // 要删除的节点就是根节点，直接将根节点变为该节点的左子节点
+              this.root = node.left
+            } else {
+              // 要删除的节点不是根节点，将父节点的左或右子节点设为该节点的左子节点
+              parent[leftOrRight] = node.left
+            }
+          } else if (node.left == null) {
+            // 要删除的节点只有一个右子节点
+            if (node === this.root) {
+              // 要删除的节点就是根节点，直接将根节点变为该节点的右子节点
+              this.root = node.right
+            } else {
+              // 要删除的节点不是根节点，将父节点的左或右子节点设为该节点的右子节点
+              parent[leftOrRight] = node.right
+            }
+          } else {
+            // 要删除的节点有两个子节点,把握好两个规则，找先驱节点或者后继节点
+            const successor = this.getSuccessor(node)
+            if (node === this.root) {
+              // 要删除的节点为根节点
+              successor.left = node.left
+              this.root = successor
+            } else {
+              // 要删除的节点不是根节点
+              parent[leftOrRight] = successor
+            }
+          }
+        }
+        // getSuccessor函数，用来寻找后继节点,将后继节点替换删除节点，并将其下面所有的节点处理好
+        getSuccessor(node) {
+          // 后继节点的父节点，初始值为要删除的节点
+          let successorParent = node
+          // 后继节点，初始值为要删除节点的右子节点
+          let successor = node.right
+          // 后继节点的左子节点为空时，停止寻找，说明已找到真正的后继节点
+          while (successor.left != null) {
+            // 移动后继节点父节点的指针
+            successorParent = successor
+            // 移动后继节点的指针，在要删除节点的右子树中不断向左寻找
+            successor = successor.left
+          }
+          /*
+          找到后继节点后，有两种情况：
+            (1)后继节点不是要删除节点的右子节点
+            (2)后继节点是要删除节点的右子节点
+          */
+          if (successor !== successorParent.right) {
+            // 后继节点不是要删除节点的右子节点
+            // 将后继节点父节点的左子节点设为后继节点的右子节点（可能为空）
+            successorParent.left = successor.right
+            // 用后继节点替换要删除的节点
+            successor.right = node.right
+          }
+          // 后继节点是要删除节点的右子节点
+          // 用后继节点替换要删除的节点
+          successor.left = node.left
+          return successor
+        }
+      }
+
+      // 代码测试
+      const bst = new BST()
+
+      // bst.insert(11, 11)
+      // bst.insert(7, 7)
+      // bst.insert(15, 15)
+      // bst.insert(5, 5)
+      // bst.insert(3, 3)
+      // bst.insert(9, 9)
+      // bst.insert(8, 8)
+      // bst.insert(10, 10)
+      // bst.insert(13, 13)
+      // bst.insert(12, 12)
+      // bst.insert(14, 14)
+      // bst.insert(20, 20)
+      // bst.insert(18, 18)
+      // bst.insert(25, 25)
+      // bst.insert(6, 6)
+
+      bst.insert(7, 7)
+      bst.insert(3, 3)
+      bst.insert(1, 1)
+      bst.insert(11, 11)
+      bst.insert(9, 9)
+
+      let result = ''
+      // bst.preOrder((node) => {
+      //   result += node.key + ' '
+      // })
+      // console.log(result)
+
+      result = ''
+      bst.cenOrder((node) => {
+        result += node.key + ' '
+      })
+      console.log(result)
+
+      // result = ''
+      // bst.nextOrder((node) => {
+      //   result += node.key + ' '
+      // })
+      // console.log(result)
+
+      // console.log(bst.max())
+      // console.log(bst.min())
+      // const newBst = new BST()
+      // console.log(newBst.max())
+      // console.log(newBst.min())
+      // console.log(bst.get(12))
+      // console.log(bst.get(1))
+
+      bst.remove(11)
+      result = ''
+      bst.cenOrder((node) => {
+        result += node.key + ' '
+      })
+      console.log(result)
+    </script>
+  </body>
+</html>
