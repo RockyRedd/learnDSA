@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ch">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="../队列/队列.js"></script>
+  </head>
+  <body>
+    <script>
+      // 图
+      class Graph {
+        constructor() {
+          // 一个数组，用来存储所有的顶点
+          this.vertexes = []
+          // 一个字典，用来存储所有的边(相邻顶点)
+          this.edges = new Map()
+        }
+        // addVertex方法，用来向图中增加顶点
+        addVertex(value) {
+          this.vertexes.push(value)
+          this.edges.set(value, [])
+        }
+        // addEdge方法，用来在两个顶点之间建立边
+        addEdge(from, to) {
+          this.edges.get(from).push(to)
+          this.edges.get(to).push(from)
+        }
+        // toString方法，以字符串形式打印图，显示每个顶点的相邻顶点
+        toString() {
+          let result = ''
+          this.vertexes.forEach(item => {
+            const edges = this.edges.get(item)
+            result += `${item} => `
+            edges.forEach(item => {
+              result += `${item} `
+            })
+            result += '\n'
+          })
+          console.log(result)
+        }
+        /*
+          initializeColor方法，用来初始化所有顶点的状态
+          白色-表示顶点还未被访问过
+          灰色-表示顶点被访问过但没被执行过
+          黑色-表示顶点被访问过且被执行过
+        */
+        initializeColor() {
+          const colors = {}
+          this.vertexes.forEach(item => {
+            // 初始化所有顶点状态为白色未访问
+            colors[item] = 'white'
+          })
+          return colors
+        }
+        // 广度优先搜索BFS(借助队列)
+        BFS(init, handler) {
+          // 初始化所有顶点颜色
+          const colors = this.initializeColor()
+          // 创建一个队列
+          const queue = new Queue()
+          // 将初始化顶点加入队列
+          queue.enter(init)
+          // 当队列不为空时，一直执行循环
+          let count = 0
+          while (!queue.isEmpty()) {
+            // 取出队列中的第一个顶点
+            const first = queue.out()
+            // 该顶点已被访问，将颜色设为灰色
+            colors[first] = 'gray'
+            // 获取该顶点的所有边
+            const edges = this.edges.get(first)
+            // 将该顶点的所有未被访问过的相邻顶点添加到队列中
+            for (let i = 0; i < edges.length; i++) {
+              const neighbor = edges[i]
+              // 判断相邻顶点颜色是否为白色(未访问过)
+              if (colors[neighbor] === 'white') {
+                // 已经访问到了该顶点，颜色设为灰色
+                colors[neighbor] = 'gray'
+                // 将该顶点加入队列
+                queue.enter(neighbor)
+              }
+            }
+            // 执行该顶点相关代码
+            handler(first)
+            // 顶点已被执行，将颜色设为黑色
+            colors[first] = 'black'
+          }
+        }
+        // 深度优先搜索DFS(利用递归，也可以用栈，递归其实就是函数调用栈的利用)
+        // 暴露给外面的函数
+        DFS(init, handler) {
+          // 初始化所有顶点颜色为白色未访问
+          const colors = this.initializeColor()
+          // 调用内部递归函数
+          this.DFSVertex(init, colors, handler)
+        }
+        //内部递归函数
+        DFSVertex(value, colors, handler) {
+          // 访问了该顶点，将颜色设为灰色
+          colors[value] = 'gray'
+          // 执行该顶点相关代码
+          handler(value)
+          // 顶点已执行，将颜色设为黑色
+          colors[value] = 'black'
+          // 获取该顶点的其他相邻顶点
+          const edges = this.edges.get(value)
+          // 继续深度优先搜索其相邻顶点
+          for (let i = 0; i < edges.length; i++) {
+            const neighbor = edges[i]
+            // 如果相邻顶点颜色为白色未访问，继续深度优先搜索其所有白色相邻顶点
+            if (colors[neighbor] === 'white') {
+              this.DFSVertex(neighbor, colors, handler)
+            }
+          }
+        }
+      }
+      const arr = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']
+      const graph = new Graph()
+      arr.forEach(item => {
+        graph.addVertex(item)
+      })
+      graph.addEdge('A', 'B')
+      graph.addEdge('A', 'C')
+      graph.addEdge('A', 'D')
+      graph.addEdge('C', 'D')
+      graph.addEdge('C', 'G')
+      graph.addEdge('D', 'G')
+      graph.addEdge('D', 'H')
+      graph.addEdge('B', 'E')
+      graph.addEdge('B', 'F')
+      graph.addEdge('E', 'I')
+
+      graph.toString()
+
+      let result = ''
+      graph.BFS('A', item => {
+        result += item + ' '
+      })
+      console.log(result)
+
+      result = ''
+      graph.DFS('A', item => {
+        result += item + ' '
+      })
+      console.log(result)
+    </script>
+  </body>
+</html>
