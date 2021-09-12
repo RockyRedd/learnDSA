@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ch">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      class ArrayList {
+        constructor() {
+          this.arr = []
+        }
+        push(num) {
+          this.arr.push(num)
+        }
+        toString() {
+          console.log(this.arr.join(' '))
+        }
+        swap(i, j) {
+          const temp = this.arr[i]
+          this.arr[i] = this.arr[j]
+          this.arr[j] = temp
+        }
+        /*
+          冒泡排序，从左到右两两比较，若左小于右，什么都不做，左大于右，交换顺序，这样一轮过后最大的一定在最后一个
+          再重复上述过程，直至倒数第二位
+          再重复上述过程，直至倒数第三位
+          ······
+        */
+        bubbleSort() {
+          const length = this.arr.length
+          // 从最后一位确定到第一位
+          for (let i = length - 1; i > 0; i--) {
+            // 两两比较，左大于右就交换位置
+            for (let j = 0; j < length; j++) {
+              if (this.arr[j] > this.arr[j + 1]) {
+                this.swap(j, j + 1)
+              }
+            }
+          }
+        }
+        /*
+          选择排序，先把左边第一个设为最小，依次向后比较，有更小的就将其设为最小并记录下标值，比较完后将第一个元素与最小元素换位
+          再从第二个元素开始重复上述步骤
+        */
+        selectSort() {
+          const length = this.arr.length
+          // 从第一位确定到最后一位
+          for (let i = 0; i < length - 1; i++) {
+            // 将每轮第一个元素设为最小值,记录其下标
+            let minIndex = i
+            // 依次与之后的元素对比
+            for (let j = i + 1; j < length; j++) {
+              // 当有比最小值还小的元素时,记录其下标
+              if (this.arr[minIndex] > this.arr[j]) {
+                minIndex = j
+              }
+            }
+            // 找到最后一位后,将最小值与第一个元素换位
+            this.swap(i, minIndex)
+          }
+        }
+        /*
+          插入排序,它的一个必要条件是数组要部分有序，但我们可以把第一个元素看为是有序的
+          从第二个元素开始，将其依次与前面的元素进行比较，如果小于前一个元素，将前一个元素向后移动
+          当大于前一个元素或者没有前一个元素时，将其插入当前空缺位置
+        */
+        insertSort() {
+          const length = this.arr.length
+          // 从第二个元素开始
+          for (let i = 1; i < length; i++) {
+            // 拿到当前待插入元素
+            const current = this.arr[i]
+            let j = i
+            // 如果前一个元素大于待插入元素
+            while (j >= 1 && this.arr[j - 1] > current) {
+              // 将前一个元素后移
+              this.arr[j] = this.arr[j - 1]
+              // 继续向前比较
+              j--
+            }
+            // 退出循环代表前面的元素比待插入元素小或者前面没有元素了，将待插入元素插入当前位置
+            this.arr[j] = current
+          }
+        }
+        /*
+          希尔排序：和插入排序原理相似，区别是先设置一些间隔，每次对以间隔规则取出的所有元素先进行插入排序
+          初始间隔一般设置为数组长度的一半，之后的间隔为上次间隔的一半
+          最后再让间隔为1，就是普通的插入排序了
+        */
+        shellSort() {
+          // 获取数组长度
+          const length = this.arr.length
+          // 获取初始间隔，为数组长度一半
+          let gap = Math.floor(length / 2)
+          // 以不同的间隔，先进行几次插入排序
+          // 间隔需要大于等于1
+          while (gap >= 1) {
+            // 从下标为gap的元素开始
+            for (let i = gap; i < length; i++) {
+              // 获得当前待插入元素
+              const current = this.arr[i]
+              let j = i
+              // 若上一个间隔gap的元素比待插入元素大，则将上一个间隔gap元素向后移动gap位
+              while (this.arr[j - gap] > current && gap <= j) {
+                this.arr[j] = this.arr[j - gap]
+                j -= gap
+              }
+              // 退出循环则表示上一个间隔gap的元素比待插入元素小或者已经没有上个间隔gap的元素了，
+              // 将待插入元素插入当前位置
+              this.arr[j] = current
+            }
+            // 当前间隔已完成所有插入排序，进行下一个间隔
+            gap = Math.floor(gap / 2)
+          }
+        }
+        /*
+          快速排序：(暂时有个缺陷，只能排序没有重复数字的数组)
+            (1)先确定枢纽元素：取第一个元素，最后一个元素，以及中位元素，比较它们三个大小并换位，换位后中间那个元素即为枢纽元素，将其放在最后一个元素的前一个位置
+            (2)设置左右两个指针，左指针寻找比枢纽元素大的元素，找到后停止移动；右指针寻找比枢纽元素小的元素，找到后停止移动；判断左指针是否小于右指针，是的话交换左右指针元素，否的话交换左指针元素和枢纽元素,重复上述过程，直到左指针大于等于右指针，这样枢纽元素就被放在了正确的位置
+            (3)分而治之，分别对枢纽元素左右两边进行递归调用，重复(1)(2)步骤，递归结束的条件为左指针大于等于右指针
+        */
+        fastSort() {
+          this.fastSrotElm(0, this.arr.length - 1)
+        }
+        // 排序前中后三个元素，获取枢纽元素并把枢纽元素放置在最后一个元素的前一个位置
+        getPivot(first, last) {
+          // 获取中位元素
+          const center = Math.floor((first + last) / 2)
+          // 若第一个元素大于中位元素，交换两个元素
+          if (this.arr[first] > this.arr[center]) this.swap(first, center)
+          // 若中位元素大于最后一个元素，交换两个元素
+          if (this.arr[center] > this.arr[last]) this.swap(center, last)
+          // 交换后，若第一个元素大于中位元素，交换两个元素
+          if (this.arr[first] > this.arr[center]) this.swap(first, center)
+          // 交换后，此时的中位元素即为枢纽元素，将其放在最后一个元素的前一个位置
+          this.swap(center, last - 1)
+          // 将枢纽元素返回
+          return this.arr[last - 1]
+        }
+        // 递归调用函数
+        fastSrotElm(first, last) {
+          // 递归结束的条件
+          if (first >= last) return
+          // 获取枢纽元素
+          const pivot = this.getPivot(first, last)
+          // 定义左右指针,左指针先指向第一个元素，右指针指向枢纽元素的前一个元素
+          let left = first
+          let right = last - 1 - 1
+          // 开始移动指针，左指针大于等于右指针时停止移动
+          while (left < right) {
+            // 移动左指针，当左指针指向元素大于枢纽元素时停止
+            while (this.arr[left] < pivot) left++
+            // 移动右指针，当右指针指向元素小于枢纽元素时停止
+            while (this.arr[right] > pivot) right--
+            // 判断左指针是否小于右指针，是的话交换左右指针元素，否的话交换左指针元素和枢纽元素,
+            if (left < right) {
+              this.swap(left, right)
+            } else {
+              this.swap(left, last - 1)
+            }
+          }
+          // 分而治之，递归调用fastSortElm函数，分别处理枢纽元素左侧与右侧
+          this.fastSrotElm(first, left - 1)
+          this.fastSrotElm(left + 1, last)
+        }
+      }
+      const arr = new ArrayList()
+      arr.push(2)
+      arr.push(1)
+      arr.push(6)
+      arr.push(6)
+      arr.push(6)
+      arr.push(3)
+      arr.push(7)
+      arr.push(5)
+      arr.push(4)
+      arr.toString()
+      arr.fastSort()
+      arr.toString()
+    </script>
+  </body>
+</html>
